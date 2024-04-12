@@ -145,6 +145,11 @@ namespace WpfApp2
         {
             if (removeAfterFirstInput)
             {
+                if (lastoperation == 5)
+                {
+                    memory = 0;
+                    state = 0;
+                }
                 input = "0";
                 removeAfterFirstInput = false;
             }
@@ -158,8 +163,24 @@ namespace WpfApp2
 
         void PlusMinus()
         {
-            if (input[0] == '-') input = input.Remove(0,1);
-            else input = input.Insert(0, "-");
+            if (input[0] == '-')
+            {
+                input = input.Remove(0, 1);
+                if (recordHistory)
+                {
+                    operationHistory.Insert(0, $"-{input} -> {input}");
+                    HistoryDraw();
+                }
+            }
+            else
+            {
+                input = input.Insert(0, "-");
+                if (recordHistory)
+                {
+                    operationHistory.Insert(0, $"{input.Remove(0,1)} -> {input}");
+                    HistoryDraw();
+                }
+            }
         }
 
         void HandleOperator(int operation)
