@@ -23,6 +23,7 @@ namespace WpfApp2
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool recordHistory = true;
         int state = 0;
         int lastoperation = 0;
         string input = "0";
@@ -36,51 +37,108 @@ namespace WpfApp2
         {
             InitializeComponent();
 
+            VersionDefault(null, null); //just to apply default settings
+
             foreach (UIElement el in CalcFather.Children)
             {
                 if (el is Button)
                 {
                     ((Button)el).Click += ButtonClick;
                 }
-
             }
+            CheckBoxRecordOperations.Checked += CheckBoxChecked;
+            CheckBoxRecordOperations.Unchecked += CheckBoxUnchecked;
+            RadioDefault.Checked += VersionDefault;
+            RadioPremium.Checked += VersionPremium;
+        }
+        
+        private void VersionDefault(object sender, RoutedEventArgs e)
+        {
+            ButtonDeleteAll.Visibility = Visibility.Hidden;
+            ButtonDeleteLast.Visibility = Visibility.Hidden;
+            CheckBoxRecordOperations.Visibility = Visibility.Hidden;
+            OperationsList.Visibility = Visibility.Hidden;
+        }
+
+        private void VersionPremium(object sender, RoutedEventArgs e)
+        {
+            ButtonDeleteAll.Visibility = Visibility.Visible;
+            ButtonDeleteLast.Visibility = Visibility.Visible;
+            CheckBoxRecordOperations.Visibility = Visibility.Visible;
+            OperationsList.Visibility = Visibility.Visible;
+        }
+        private void CheckBoxChecked(object sender, RoutedEventArgs e)
+        {
+            recordHistory = true;
+        }
+
+        private void CheckBoxUnchecked(object sender, RoutedEventArgs e)
+        {
+            recordHistory = false;
         }
 
         private void ButtonClick(object sender, RoutedEventArgs e)
         {
             string str = (string)((Button)e.OriginalSource).Content;
-            switch (str)
+            if (sender == ButtonDeleteAll)
             {
-                case "Купить доп. кнопки":
-                    Numero.FontSize = 72;
-                    Numero.Text = "Стереть?";
-                    return;
-                case "+":
-                    HandleOperator(1);
-                    break;
-                case "-":
-                    HandleOperator(2);
-                    break;
-                case "×":
-                    HandleOperator(3);
-                    break;
-                case "÷":
-                    HandleOperator(4);
-                    break;
-                case "=":
-                    HandleOperator(5);
-                    break;
-                case "+/-":
-                    PlusMinus();
-                    break;
-                default:
-                    CheckForRemovingInput();
-                    if (input == "0" && str != ",") input = "";
-                    if (str == "," && !CanAddPoint()) break;
-                    input += str;
-                    break;
+                HistoryRemove(true);
             }
-            NumeroDraw();
+            else if (sender == ButtonDeleteLast)
+            {
+                HistoryRemove(false);
+            }
+            else
+            {
+                switch (str)
+                {
+                    case "Купить доп. кнопки":
+                        Numero.FontSize = 72;
+                        Numero.Text = "Стереть?";
+                        return;
+                    case "+":
+                        HandleOperator(1);
+                        break;
+                    case "-":
+                        HandleOperator(2);
+                        break;
+                    case "×":
+                        HandleOperator(3);
+                        break;
+                    case "÷":
+                        HandleOperator(4);
+                        break;
+                    case "=":
+                        HandleOperator(5);
+                        break;
+                    case "+/-":
+                        PlusMinus();
+                        break;
+                    default:
+                        CheckForRemovingInput();
+                        if (input == "0" && str != ",") input = "";
+                        if (str == "," && !CanAddPoint()) break;
+                        input += str;
+                        break;
+                }
+                NumeroDraw();
+            }
+        }
+
+        void HistoryRemove(bool everything)
+        {
+            if (!operationHistory.Any()) return;
+
+            if (everything) operationHistory.Clear();
+            else operationHistory.RemoveAt(0);
+
+            HistoryDraw();
+        }
+
+        void HistoryDraw()
+        {
+            OperationsList.ItemsSource = null;
+            OperationsList.ItemsSource = operationHistory;
         }
 
         void CheckForRemovingInput()
@@ -174,9 +232,11 @@ namespace WpfApp2
                 memory = Convert.ToDouble(input);
             }
 
-            if (operationString != "") operationHistory.Insert(0, operationString);
-            OperationsList.ItemsSource = null;
-            OperationsList.ItemsSource = operationHistory;
+            if (recordHistory)
+            {
+                if (operationString != "") operationHistory.Insert(0, operationString);
+                HistoryDraw();
+            }
 
             lastoperation = operation;
 
