@@ -80,7 +80,6 @@ namespace WpfApp2
                     input += str;
                     break;
             }
-            StateDebugText.Text = state.ToString();
             NumeroDraw();
         }
 
@@ -187,7 +186,6 @@ namespace WpfApp2
             {
             }
             else state = operation;
-            OperationDebugText.Text = operation.ToString();
         }
 
         private void NumeroDraw()

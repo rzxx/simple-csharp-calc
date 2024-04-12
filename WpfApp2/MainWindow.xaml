@@ -49,7 +49,5 @@
 
         <Rectangle Fill="GhostWhite" Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="7"></Rectangle>
         <ListBox x:Name="OperationsList" Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="5" Background="MidnightBlue" Foreground="GhostWhite" FontFamily="Roboto Flex" FontSize="24"/>
-        <TextBlock x:Name="OperationDebugText" Grid.Column="4" Grid.Row="5" Foreground="GhostWhite" Background="Salmon" FontSize="46" FontFamily="Roboto Flex" FontWeight="Bold"/>
-        <TextBlock x:Name="StateDebugText" Grid.Column="5" Grid.Row="5" Foreground="GhostWhite" Background="Salmon" FontSize="46" FontFamily="Roboto Flex" FontWeight="Bold"/>
     </Grid>
 </Window>
