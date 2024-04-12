@@ -24,10 +24,14 @@ namespace WpfApp2
     public partial class MainWindow : Window
     {
         int state = 0;
+        int lastoperation = 0;
         string input = "0";
         double memory = 0;
         double memoryRepeat = 0;
         bool removeAfterFirstInput = false;
+
+        List<string> operationHistory = new List<string>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -45,7 +49,6 @@ namespace WpfApp2
         private void ButtonClick(object sender, RoutedEventArgs e)
         {
             string str = (string)((Button)e.OriginalSource).Content;
-            
             switch (str)
             {
                 case "Купить доп. кнопки":
@@ -77,7 +80,7 @@ namespace WpfApp2
                     input += str;
                     break;
             }
-
+            StateDebugText.Text = state.ToString();
             NumeroDraw();
         }
 
@@ -104,57 +107,64 @@ namespace WpfApp2
 
         void HandleOperator(int operation)
         {
+            string operationString = "";
+
             if (state != 0)
             {
                 switch (state)
                 {
                     case 1:
-                        if (removeAfterFirstInput)
+                        if (removeAfterFirstInput && operation == 5)
                         {
+                            operationString = $"{memory} + {memoryRepeat} = {memory + memoryRepeat}";
                             memory += memoryRepeat;
                         }
-                        else
+                        else if (lastoperation != 5)
                         {
+                            operationString = $"{memory} + {input} = {memory + Convert.ToDouble(input)}";
                             memory += Convert.ToDouble(input);
                             memoryRepeat = Convert.ToDouble(input);
+
                         }
-                        state = 0;
                         break;
                     case 2:
-                        if (removeAfterFirstInput)
+                        if (removeAfterFirstInput && operation == 5)
                         {
+                            operationString = $"{memory} - {memoryRepeat} = {memory - memoryRepeat}";
                             memory -= memoryRepeat;
                         }
-                        else
+                        else if (lastoperation != 5)
                         {
+                            operationString = $"{memory} - {input} = {memory - Convert.ToDouble(input)}";
                             memory -= Convert.ToDouble(input);
                             memoryRepeat = Convert.ToDouble(input);
                         }
-                        state = 0;
                         break;
                     case 3:
-                        if (removeAfterFirstInput)
+                        if (removeAfterFirstInput && operation == 5)
                         {
+                            operationString = $"{memory} × {memoryRepeat} = {memory * memoryRepeat}";
                             memory *= memoryRepeat;
                         }
-                        else
+                        else if (lastoperation != 5)
                         {
+                            operationString = $"{memory} × {input} = {memory * Convert.ToDouble(input)}";
                             memory *= Convert.ToDouble(input);
                             memoryRepeat = Convert.ToDouble(input);
                         }
-                        state = 0;
                         break;
                     case 4:
-                        if (removeAfterFirstInput)
+                        if (removeAfterFirstInput && operation == 5)
                         {
+                            operationString = $"{memory} ÷ {memoryRepeat} = {memory / memoryRepeat}";
                             memory /= memoryRepeat;
                         }
-                        else
+                        else if (lastoperation != 5)
                         {
+                            operationString = $"{memory} ÷ {input} = {memory / Convert.ToDouble(input)}";
                             memory /= Convert.ToDouble(input);
                             memoryRepeat = Convert.ToDouble(input);
                         }
-                        state = 0;
                         break;
                     default:
                         break;
@@ -164,12 +174,20 @@ namespace WpfApp2
             {
                 memory = Convert.ToDouble(input);
             }
+
+            if (operationString != "") operationHistory.Insert(0, operationString);
+            OperationsList.ItemsSource = null;
+            OperationsList.ItemsSource = operationHistory;
+
+            lastoperation = operation;
+
             removeAfterFirstInput = true;
             input = memory.ToString();
             if (operation == 5)
             {
             }
             else state = operation;
+            OperationDebugText.Text = operation.ToString();
         }
 
         private void NumeroDraw()
