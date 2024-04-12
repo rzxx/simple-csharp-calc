@@ -273,7 +273,7 @@ namespace WpfApp2
         {
             switch (input.Length)
             {
-                case int n when (n > 20):
+                case int n when (n > 21):
                     Numero.FontSize = 32;
                     Numero.Text = "Длина превышена!";
                     return;
